@@ -9,7 +9,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.AddNewsActivity">
+    tools:context=".ui.addnewsactivity.AddNewsActivity">
 
 
     <RelativeLayout
@@ -84,6 +84,7 @@
             android:background="@drawable/button_shape"
             android:padding="5dp"
             android:text="Add News To list"
+            android:layout_marginBottom="15dp"
             android:textColor="#fff" />
     </RelativeLayout>
 

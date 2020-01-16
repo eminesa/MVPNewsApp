@@ -1,8 +1,7 @@
-package com.example.recyclerviewapp.ui
+package com.example.recyclerviewapp.ui.addnewsactivity
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,6 +11,7 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.recyclerviewapp.dto.DataDTO
+import com.example.recyclerviewapp.ui.mainactivity.MainActivity
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -22,12 +22,10 @@ import java.util.*
 
 class AddNewsActivity : AppCompatActivity() {
 
-    val progressDialog: ProgressDialog? = null
     private var filePath: Uri? = null
 
     internal var storage: FirebaseStorage? = null
     internal var storageReference: StorageReference? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,17 +68,14 @@ class AddNewsActivity : AppCompatActivity() {
             val imageRef = storageReference!!.child("images/" + UUID.randomUUID().toString())
             imageRef.putFile(filePath!!)
                     .addOnSuccessListener {
-                        progressDialog?.dismiss()
-                        Toast.makeText(this, "Upload is success", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "News added with success", Toast.LENGTH_LONG).show()
                     }
                     .addOnFailureListener {
-                        progressDialog?.dismiss()
                         Toast.makeText(this, "Can not upload", Toast.LENGTH_LONG).show()
                     }
                     .addOnProgressListener {
                         //Yuklenme sirasinda kac byte olacagi ayarlaniyor
                         val progress = 100.0 * it.bytesTransferred / it.totalByteCount
-                        progressDialog?.setMessage("Uploaded " + progress.toInt() + "/")
                     }
 
 
@@ -89,14 +84,11 @@ class AddNewsActivity : AppCompatActivity() {
             //addOnCanceledListener listen my firebase when I added new Item turn to me
             newsId?.let {
                 database.child(it).setValue(news).addOnCanceledListener {
-
                     //    Toast.makeText(this, "News added with success", Toast.LENGTH_LONG).show()
                 }
             }
-            showProgressDialog()
             val intent = Intent(this, MainActivity::class.java)
             this.startActivity(intent)
-            progressDialog?.dismiss()
 
         } else {
             Toast.makeText(this, "anyone colomn is not empty", Toast.LENGTH_LONG).show()
@@ -119,24 +111,23 @@ class AddNewsActivity : AppCompatActivity() {
         private val PERMISSION_CODE = 1001
     }
 
-    //Fotograflara erisim izni istemek icicn kullanilan override metodu
+    //Fotograflara erisim izni istemek icin kullanilan override metodu
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
         when (requestCode) {
             PERMISSION_CODE -> {
                 if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    //permisson from pop up  granted
+                    Toast.makeText(this, "Permisssion is success", Toast.LENGTH_LONG).show()
+
                     pickImageFromGaleri()
                 } else {
-                    //permisson from pop up denied
                     Toast.makeText(this, "Permisssion DENIED", Toast.LENGTH_LONG).show()
 
                 }
             }
         }
     }
-
     @SuppressLint("MissingSuperCall")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
@@ -149,16 +140,8 @@ class AddNewsActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         }
 
     }
-
-    private fun showProgressDialog() {
-
-        progressDialog?.setTitle("Uploading...")
-        progressDialog?.show()
-    }
-
 
 }

@@ -9,11 +9,11 @@ import com.example.recyclerviewapp.dto.DataDTO
 import java.util.*
 
 
-class NewsListAdapter(var newsList: List<DataDTO>,
-                      private val onItemClick: (view: View, newsDTO: DataDTO) -> Unit)
+class NewsListAdapter(var newsList: List<DataDTO>
+                      , private val onItemClick: (view: View, newsDTO: DataDTO) -> Unit)
     : RecyclerView.Adapter<NewsListViewHolder>(), Filterable {
-    var filter: CustomFilter? = null
 
+    var filter: CustomFilter? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsListViewHolder {
         return NewsListViewHolder(parent)
@@ -24,9 +24,8 @@ class NewsListAdapter(var newsList: List<DataDTO>,
     }
 
     override fun onBindViewHolder(holder: NewsListViewHolder, position: Int) {
-        holder.bindTo(newsList[position])
-        { view, newsDTO -> onItemClick(view, newsDTO) }
-
+        holder.bindTo(newsList[position], onItemClick)
+        // { view, newsDTO -> onItemClick(view, newsDTO) }
     }
 
     //For filter

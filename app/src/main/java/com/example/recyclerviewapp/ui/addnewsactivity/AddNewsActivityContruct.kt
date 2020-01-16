@@ -1,0 +1,3 @@
+package com.example.recyclerviewapp.ui.addnewsactivity
+
+interface AddNewsActivityContruct

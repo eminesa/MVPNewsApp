@@ -3,8 +3,7 @@ package com.example.recyclerviewapp.adapter
 
 import android.widget.Filter
 import com.example.recyclerviewapp.dto.DataDTO
-
-import java.util.ArrayList
+import java.util.*
 
 //this class is for filter.
 class CustomFilter(internal var filterList: ArrayList<DataDTO>, internal var adapter: NewsListAdapter) : Filter() {
@@ -20,15 +19,15 @@ class CustomFilter(internal var filterList: ArrayList<DataDTO>, internal var ada
 
         if (charSequence != null && charSequence.length > 0) {
 
-            val filteredPlayers = ArrayList<DataDTO>()
+            val filteredList = ArrayList<DataDTO>()
            // for (index in filterList) best practis olarak asagidaki foreach yapisi kullanilir. Diger turlu java ya benzer.
             filterList.forEach {
                 //CHECK
                 if (it.newtitle.toLowerCase().contains(charSequence) || it.newdescrip.toLowerCase().contains(charSequence)) {
-                    filteredPlayers.add(it)
+                    filteredList.add(it)
                 }
             }
-            results.values = filteredPlayers
+            results.values = filteredList
         } else {
             results.values = filterList
         }

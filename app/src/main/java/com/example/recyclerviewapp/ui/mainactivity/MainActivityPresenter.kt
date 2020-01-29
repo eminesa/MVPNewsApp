@@ -9,7 +9,6 @@ import java.util.*
 
 class MainActivityPresenter {
 
-
     //  MainActivityContruct.Presenter'dan miras aldigim icicn benden override etmem gereken metod oldugunu soyluyor override etmezsem kizaracak
     //view olustumam gerekiyor.
     private lateinit var mView: MainActivityContruct.View
@@ -36,8 +35,9 @@ class MainActivityPresenter {
         mContext.startActivity(intent)
     }
 
-    //Burda listesyi dolduruyoruz
     fun retrieveData() {
+        //Burda listeyi dolduruyoruz
+
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
@@ -45,7 +45,7 @@ class MainActivityPresenter {
                     val post = it.getValue(DataDTO::class.java)
                     posts.add(post!!)
                 }
-                //recycler icerisine listeyi eklemek istiyoruz eger gidip showNews'i created fonksiiyonu icinde cagirirsak bos olan listeyi dönecegi icin icerisini dolduramyacak
+                //Recycler icerisine listeyi eklemek istiyoruz. Eger gidip showNews'i created fonksiyonu icinde cagirirsak bos olan listeyi dönecegi icin icerisini dolduramyacak
                 //Bunun olmaması icin listeyi doldurduktan sonra showNews metodunu cagirip listeyi icerisine atiyoruz
                 mView.showNews(posts)
             }
@@ -56,7 +56,4 @@ class MainActivityPresenter {
         })
 
     }
-
-
-    //search'ın sonucunu verir burda alması gereken bir sey olmadigi icin dönusumune gerek yok
 }

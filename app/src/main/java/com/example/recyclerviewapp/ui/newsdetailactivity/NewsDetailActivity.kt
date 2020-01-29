@@ -21,17 +21,9 @@ class NewsDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_news_detail)
 
         msPresenter = NewsDetailActivityPresenter()
-        this.msPresenter.setView(this)
+        msPresenter.setView(this)
 
         bindViews()
-        // Verileri geridi ama click ozelligi verilemedi
-
-
-//        newsTitleDetailTxt.text = intent.extras.get("newtitle").toString()
-//        newsDescriptionDetailTxt.text = intent.extras.get("newdescrip").toString()
-//        //Veri tabanından gelen degerimi detailProjectImageUrl icerisine atiyorum.
-//        val detailProjectImageUrl = intent.extras.get("newimageurl").toString()
-//        Glide.with(this).load(detailProjectImageUrl).into(newsUrlImage)
     }
 
     fun bindViews() {

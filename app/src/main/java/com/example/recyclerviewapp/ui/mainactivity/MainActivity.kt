@@ -22,30 +22,26 @@ class MainActivity : AppCompatActivity(), MainActivityContruct.View {
     private lateinit var mSearchView: SearchView
     private lateinit var adapter: NewsListAdapter
 
-    //posts ilk degeri null ve icerisini dolduramadigim icin tiklanma olmuyor.
 
-    val posts = ArrayList<DataDTO>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //Burada cagirmasak uygulama il ayaga kalktiginda view'i bulamaza ve crash olur
-        this.mPresenter = MainActivityPresenter()
-        this.mPresenter.setView(this, this)
-        this.mPresenter.created()
-        this.mPresenter.retrieveData()
+        //Burada setViewi cagirmasak uygulama ayaga kalktiginda view'i bulamasa da crash olur.contect gondermemin amaci presenterda contect kullancak olmam
+        mPresenter = MainActivityPresenter()
+        mPresenter.setView(this, this)
+        mPresenter.created()
+        mPresenter.retrieveData()
     }
 
-    //donusturuldu
     override fun bindViews() {
-        this.mRecyclerView = findViewById(R.id.recyclerView)
+        mRecyclerView = findViewById(R.id.recyclerView)
         mRecyclerView.apply {
             this.layoutManager = LinearLayoutManager(this@MainActivity)
         }
         this.mSearchView = findViewById(R.id.searchView)
     }
 
-    //donusturuldu
     override fun showNews(posts: ArrayList<DataDTO>) {
 
         if (!posts.isEmpty()) {
@@ -59,11 +55,9 @@ class MainActivity : AppCompatActivity(), MainActivityContruct.View {
         }
     }
 
-    //clickolduktan sonra goturulecek olan verileri tude alir
+    //clickten sonra tasi
+    // tiklanacak olan verileri burdan alir
     private fun onItemClicked(newsItem: DataDTO) {
-        //Burda tiklanma olunca gerceklesecek olay kodlanacak
-        //bunu presenter icne tasimak gerekecek
-
         val intent = Intent(this, NewsDetailActivity::class.java)
 
         //Detail sayfasına gonderdigimiz verileri put extra kullanarak göndericez.
@@ -74,11 +68,10 @@ class MainActivity : AppCompatActivity(), MainActivityContruct.View {
     }
 
 
-    //Donusturuldu
     override fun initOnclick() {
-        //goAddActivity metodu MVP'ye donusturuldu
-        this.fabButton.setOnClickListener {
-            this.mPresenter.fabCliced()
+
+        fabButton.setOnClickListener {
+            mPresenter.fabCliced()
         }
 
         mSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

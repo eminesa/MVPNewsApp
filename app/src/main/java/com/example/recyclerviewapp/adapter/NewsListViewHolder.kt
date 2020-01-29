@@ -18,7 +18,8 @@ class NewsListViewHolder(viewGroup: ViewGroup) : RecyclerView.ViewHolder(LayoutI
     private val image by lazy { itemView.findViewById<ImageView>(R.id.imageNew) }
     private val txtData by lazy { itemView.findViewById<TextView>(R.id.txtReleaseDate) }
 
-    //OnClickItem icin interface yerine Kotlinde Higher order metodu olusturuyoruz ayni anlami ifade eder
+    //
+    // OnClickItem icin interface yerine Kotlinde Higher order metodu olusturuyoruz ayni anlami ifade eder
 
     fun bindTo(dataDTO: DataDTO, onItemClick: (view: View, newsDTO: DataDTO) -> Unit) {
 

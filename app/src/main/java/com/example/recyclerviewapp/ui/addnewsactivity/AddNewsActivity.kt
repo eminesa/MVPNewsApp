@@ -8,24 +8,27 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.recyclerviewapp.dto.DataDTO
-import com.example.recyclerviewapp.ui.mainactivity.MainActivity
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
+import com.example.recyclerviewapp.R
 import kotlinx.android.synthetic.main.activity_add_news.*
-import java.util.*
 
 
-class AddNewsActivity : AppCompatActivity() {
+class AddNewsActivity : AppCompatActivity(), AddNewsActivityContruct.View {
+
 
     private var filePath: Uri? = null
 
-    internal var storage: FirebaseStorage? = null
-    internal var storageReference: StorageReference? = null
+
+    private lateinit var mPresenter: AddNewsActivityPresenter
+    private lateinit var titleTextView: TextView
+    private lateinit var descriptionTextView: TextView
+    private lateinit var newsImageView: ImageView
+    private lateinit var imageChooseButton: Button
+    private lateinit var addNewsButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,77 +44,44 @@ class AddNewsActivity : AppCompatActivity() {
             }
         }
 
-        chooseImageButton.setOnClickListener {
-            pickImageFromGaleri()
-        }
-        addNewsFirebaseButton.setOnClickListener {
-            saveNews()
-        }
+        mPresenter = AddNewsActivityPresenter()
+
+        mPresenter.setView(this, this)
+        mPresenter.created()
 
     }
 
-    private fun saveNews() {
+    override fun bindViews() {
 
-        storage = FirebaseStorage.getInstance()
-        storageReference = storage!!.reference
-        lateinit var database: DatabaseReference
-
-        database = FirebaseDatabase.getInstance().reference.child("news")
-        val newsId = database.push().key
-        val title = addNewsTitleEditText.text.toString().trim()
-        val descrip = addNewsDescripEditText.text.toString().trim()
-        // val imageUrl adinda bir degisken eklememize gerek yok biz image secimi yaparken gelen image icin url aliyoruz bir daha ayni urli cekmemize gerek yok
+        titleTextView = findViewById(R.id.addNewsTitleEditText)
+        descriptionTextView = findViewById(R.id.addNewsDescripEditText)
+        newsImageView = findViewById(R.id.addNewsImageView)
+        imageChooseButton = findViewById(R.id.chooseImageButton)
+        addNewsButton = findViewById((R.id.addNewsFirebaseButton))
+    }
 
 
-        if (filePath != null && !title.equals("") && !descrip.equals("")) {
-
-            val imageRef = storageReference!!.child("images/" + UUID.randomUUID().toString())
-            imageRef.putFile(filePath!!)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "News added with success", Toast.LENGTH_LONG).show()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Can not upload", Toast.LENGTH_LONG).show()
-                    }
-                    .addOnProgressListener {
-                        //Yuklenme sirasinda kac byte olacagi ayarlaniyor
-                        val progress = 100.0 * it.bytesTransferred / it.totalByteCount
-                    }
-
-
-            //news metod added for getting news items from model
-            val news = DataDTO(title, filePath.toString(), descrip)
-            //addOnCanceledListener listen my firebase when I added new Item turn to me
-            newsId?.let {
-                database.child(it).setValue(news).addOnCanceledListener {
-                    //    Toast.makeText(this, "News added with success", Toast.LENGTH_LONG).show()
-                }
-            }
-            val intent = Intent(this, MainActivity::class.java)
-            this.startActivity(intent)
-
-        } else {
-            Toast.makeText(this, "anyone colomn is not empty", Toast.LENGTH_LONG).show()
-
+    override fun initOnclick() {
+        imageChooseButton.setOnClickListener {
+            mPresenter.pickImageFromGaleri()
         }
-
+        addNewsButton.setOnClickListener {
+            mPresenter.saveNews(filePath, titleTextView, descriptionTextView)
+            onBackPressed()
+        }
     }
 
-    private fun pickImageFromGaleri() {
 
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(Intent.createChooser(intent, "Resim Seçiniz"), IMAGE_PICK_CODE)
-    }
+    //File path degiskenini parametre olarak gonder ve icerisin doldurarak geri getir
+
 
     companion object {
-
         private val IMAGE_PICK_CODE = 1000
         private val PERMISSION_CODE = 1001
     }
 
     //Fotograflara erisim izni istemek icin kullanilan override metodu
+    // model ile ilgisi olmayan foncsiton veya metodlarin activity icinde birakiyorum
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
         when (requestCode) {
@@ -120,7 +90,7 @@ class AddNewsActivity : AppCompatActivity() {
 
                     Toast.makeText(this, "Permisssion is success", Toast.LENGTH_LONG).show()
 
-                    pickImageFromGaleri()
+                    mPresenter.pickImageFromGaleri()
                 } else {
                     Toast.makeText(this, "Permisssion DENIED", Toast.LENGTH_LONG).show()
 
@@ -128,6 +98,7 @@ class AddNewsActivity : AppCompatActivity() {
             }
         }
     }
+
     @SuppressLint("MissingSuperCall")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
